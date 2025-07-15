@@ -59,6 +59,11 @@ const SectionTitle = styled(Typography)({
 export default function TermsAndConditions() {
   const router = useRouter();
 
+  const handleAccept = () => {
+    // Navigate back to loan application with terms accepted state
+    router.push('/loan-application?step=4&termsAccepted=true');
+  };
+
   return (
     <PageContainer>
       <Header />
@@ -115,15 +120,18 @@ export default function TermsAndConditions() {
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
             <Button
               variant="contained"
-              onClick={() => router.back()}
+              onClick={handleAccept}
               sx={{
                 bgcolor: '#FF5E00',
                 '&:hover': { bgcolor: '#E65500' },
                 textTransform: 'none',
                 padding: '12px 32px',
+                minWidth: '200px',
+                fontSize: '16px',
+                fontWeight: 600,
               }}
             >
-              Back to Application
+              Accept & Continue
             </Button>
           </Box>
         </ContentCard>

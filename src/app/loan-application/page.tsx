@@ -1,5 +1,6 @@
 'use client';
-import { Box, Typography, TextField, Button, styled, IconButton, MenuItem, Select, FormControl, InputLabel, Link as MuiLink } from '@mui/material';
+import { Box, Typography, TextField, Button, styled, IconButton, MenuItem, Select, FormControl, InputLabel, Link as MuiLink, Dialog, DialogContent, DialogContentText } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SideNavigation from '../components/SideNavigation';
@@ -22,12 +23,15 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
   margin: '0 auto',
   gap: '24px',
   [theme.breakpoints.down('md')]: {
-    padding: '16px',
+    padding: '16px 2px',
     flexDirection: 'column',
     gap: '16px',
+    margin: 0,
+    width: '100%'
   },
   [theme.breakpoints.down('sm')]: {
-    padding: '12px',
+    padding: '12px 2px',
+    gap: '12px'
   },
 }));
 
@@ -143,6 +147,9 @@ const MainContent = styled(Box)<{ sidenavwidth: string }>(({ theme, sidenavwidth
   [theme.breakpoints.down('md')]: {
     marginLeft: 0,
     marginBottom: '80px',
+    width: '100%',
+    maxWidth: '100%',
+    padding: 0
   },
 }));
 
@@ -154,10 +161,13 @@ const FormContainer = styled(Box)(({ theme }) => ({
   maxWidth: '1000px',
   margin: '0 auto',
   [theme.breakpoints.down('md')]: {
-    padding: '24px 20px',
+    padding: '20px 12px',
+    margin: '0 2px',
+    borderRadius: '4px',
   },
   [theme.breakpoints.down('sm')]: {
-    padding: '20px 16px',
+    padding: '16px 8px',
+    margin: '0 2px',
   },
 }));
 
@@ -221,7 +231,7 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-const CustomSelect = styled(Select)(({ theme }) => ({
+const CustomSelect = styled(Select<string>)(({ theme }) => ({
   height: '56px',
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
     borderColor: '#FF5E00',
@@ -284,6 +294,7 @@ export default function LoanApplication() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isExpanded, setIsExpanded] = useState(false);
   const [loanType, setLoanType] = useState<string>('');
+  const [showSuccess, setShowSuccess] = useState(false);
   const router = useRouter();
   const totalSteps = 4;
 
@@ -312,6 +323,15 @@ export default function LoanApplication() {
     } else {
       router.back();
     }
+  };
+
+  const handleSubmit = () => {
+    setShowSuccess(true);
+    // Auto-close dialog after 2 seconds and redirect to dashboard
+    setTimeout(() => {
+      setShowSuccess(false);
+      router.push('/dashboard');
+    }, 2000);
   };
 
   const handleExpandClick = () => {
@@ -458,18 +478,7 @@ export default function LoanApplication() {
                       Terms and Conditions
                     </MuiLink>
                   </Typography>
-                  <Button
-                    variant="contained"
-                    onClick={() => setCurrentStep(4)}
-                    sx={{
-                      bgcolor: '#FF5E00',
-                      '&:hover': { bgcolor: '#E65500' },
-                      textTransform: 'none',
-                      width: { xs: '100%', sm: 'auto' },
-                    }}
-                  >
-                    Accept & Continue
-                  </Button>
+                  
                 </Box>
               </>
             )}
@@ -481,11 +490,11 @@ export default function LoanApplication() {
                     mb: 2,
                     fontSize: { xs: '18px', sm: '20px' } 
                   }}>
-                    Application Submitted Successfully
+                    Application Ready for Submission
                   </Typography>
                   <Button
                     variant="contained"
-                    onClick={() => router.push('/')}
+                    onClick={handleSubmit}
                     sx={{
                       bgcolor: '#FF5E00',
                       '&:hover': { bgcolor: '#E65500' },
@@ -494,48 +503,78 @@ export default function LoanApplication() {
                       width: { xs: '100%', sm: 'auto' },
                     }}
                   >
-                    Back to Dashboard
+                    Submit Application
                   </Button>
                 </Box>
               </>
             )}
             <ActionButtons>
-              <Button
-                variant="outlined"
-                onClick={handleBack}
-                disabled={currentStep === 1}
-                sx={{ 
-                  borderColor: '#FF5E00', 
-                  color: '#FF5E00',
-                  '&:hover': { borderColor: '#E65500', color: '#E65500' },
-                  textTransform: 'none',
-                  padding: { xs: '8px 16px', sm: '12px 32px' },
-                  height: { xs: '48px', sm: 'auto' },
-                  fontSize: { xs: '16px', sm: 'inherit' },
-                  width: { xs: '100%', sm: 'auto' },
-                }}
-              >
-                Back
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleNext}
-                sx={{ 
-                  bgcolor: '#FF5E00',
-                  '&:hover': { bgcolor: '#E65500' },
-                  textTransform: 'none',
-                  padding: { xs: '8px 16px', sm: '12px 32px' },
-                  height: { xs: '48px', sm: 'auto' },
-                  fontSize: { xs: '16px', sm: 'inherit' },
-                  width: { xs: '100%', sm: 'auto' },
-                }}
-              >
-                {currentStep === steps.length ? 'Submit' : 'Next'}
-              </Button>
+              {currentStep > 1 && (
+                <Button
+                  variant="outlined"
+                  onClick={handleBack}
+                  sx={{ 
+                    borderColor: '#FF5E00', 
+                    color: '#FF5E00',
+                    '&:hover': { borderColor: '#E65500', color: '#E65500' },
+                    textTransform: 'none',
+                    padding: { xs: '8px 16px', sm: '12px 32px' },
+                    height: { xs: '48px', sm: 'auto' },
+                    fontSize: { xs: '16px', sm: 'inherit' },
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
+                  Back
+                </Button>
+              )}
+              {currentStep < totalSteps && (
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  sx={{ 
+                    bgcolor: '#FF5E00',
+                    '&:hover': { bgcolor: '#E65500' },
+                    textTransform: 'none',
+                    padding: { xs: '8px 16px', sm: '12px 32px' },
+                    height: { xs: '48px', sm: 'auto' },
+                    fontSize: { xs: '16px', sm: 'inherit' },
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
+                  Next
+                </Button>
+              )}
             </ActionButtons>
           </FormContainer>
         </ContentWrapper>
       </MainContent>
+
+      {/* Success Dialog */}
+      <Dialog
+        open={showSuccess}
+        aria-describedby="success-dialog-description"
+        PaperProps={{
+          sx: {
+            borderRadius: '8px',
+            padding: '16px',
+            minWidth: '300px'
+          }
+        }}
+      >
+        <DialogContent sx={{ textAlign: 'center' }}>
+          <CheckCircleIcon sx={{ fontSize: 60, color: '#4CAF50', mb: 2 }} />
+          <DialogContentText
+            id="success-dialog-description"
+            sx={{
+              color: '#000',
+              fontSize: '18px',
+              fontWeight: 500
+            }}
+          >
+            Application Submitted Successfully!
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
     </PageContainer>
   );
 }
