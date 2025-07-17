@@ -50,10 +50,10 @@ const NavIconButton = styled(Box)<NavIconButtonProps>(({ theme, isExpanded }) =>
     flexShrink: 0, // Prevent icon from shrinking
   },
   '&:hover': {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(58, 41, 41, 0.39)',
   },
   '&.active': {
-    backgroundColor: '#FF5E00',
+    backgroundColor: '#25170aff',
     '&::before': {
       content: '""',
       position: 'absolute',

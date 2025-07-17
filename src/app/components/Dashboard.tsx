@@ -17,7 +17,7 @@ const SideNav = styled(Box)<{ isExpanded: boolean }>(({ theme, isExpanded }) => 
   top: '100px',
   bottom: 0,
   width: isExpanded ? '240px' : '80px',
-  background: '#1C1C1C',
+  background: '#ff6600ff',// nAV BAR COLOR
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -26,7 +26,7 @@ const SideNav = styled(Box)<{ isExpanded: boolean }>(({ theme, isExpanded }) => 
   zIndex: 1000,
   overflow: 'hidden',
   borderTopRightRadius: '20px',
-  borderBottomRightRadius: '20px',
+  borderBottomRightRadius: '0px',
   [theme.breakpoints.down('md')]: {
     top: 'auto', // Reset top position
     bottom: 0, // Stick to bottom
@@ -43,7 +43,7 @@ const SideNav = styled(Box)<{ isExpanded: boolean }>(({ theme, isExpanded }) => 
 
 const MainContent = styled(Box)<{ sidenavwidth: string }>(({ theme, sidenavwidth }) => ({
   marginLeft: sidenavwidth,
-  padding: '24px',
+  padding: '30px',
   transition: 'margin-left 0.3s ease',
   [theme.breakpoints.down('md')]: {
     marginLeft: 0,
@@ -148,37 +148,38 @@ const DSRRow = styled(Box)({
   alignItems: 'center',
 });
 
-const ApplyButtonContainer = styled(Box)({
-  display: 'flex',
-  justifyContent: 'center',
-  width: '100%',
-  marginTop: '24px',
-});
+// const ApplyButtonContainer = styled(Box)({
+//   display: 'flex',
+//   justifyContent: 'center',
+//   width: '100%',
+//   marginTop: '24px',
+// });
 
-const ApplyButton = styled(Button)({
-  backgroundColor: '#FF5E00',
-  color: '#FFFFFF',
-  padding: '12px 32px',
-  borderRadius: '8px',
-  textTransform: 'none',
-  fontSize: '16px',
-  fontWeight: 600,
-  minWidth: '280px',
-  '&:hover': {
-    backgroundColor: '#E65500',
-  },
-});
+// const ApplyButton = styled(Button)({
+//   backgroundColor: '#FF5E00',
+//   color: '#FFFFFF',
+//   padding: '12px 32px',
+//   borderRadius: '8px',
+//   textTransform: 'none',
+//   fontSize: '16px',
+//   fontWeight: 600,
+//   minWidth: '280px',
+//   '&:hover': {
+//     backgroundColor: '#E65500',
+//   },
+// });
 
 const ExpandButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
-  right: '-16px',
-  top: '24px',
-  background: '#FFFFFF',
-  width: '32px',
-  height: '32px',
-  boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+  right: '-8px',
+  top: '26px',
+  background: '#ffffffff',
+  width: '40px',
+  height: '42px',
+  boxShadow: '0px 2px 4px rgba(255, 70, 70, 0.1)',
+  
   '&:hover': {
-    background: '#FFFFFF',
+    background: '#ffffffff',
   },
   [theme.breakpoints.down('md')]: {
     display: 'none',
@@ -296,11 +297,11 @@ export default function Dashboard() {
             </DSRTable>
           </DSRDetailsCard>
 
-          <ApplyButtonContainer>
+          {/* <ApplyButtonContainer>
             <ApplyButton onClick={handleApplyLoan}>
               Apply for Loan / Advance
             </ApplyButton>
-          </ApplyButtonContainer>
+          </ApplyButtonContainer> */}
         </Box>
       </MainContent>
     </DashboardContainer>
