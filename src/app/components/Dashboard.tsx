@@ -148,26 +148,26 @@ const DSRRow = styled(Box)({
   alignItems: 'center',
 });
 
-// const ApplyButtonContainer = styled(Box)({
-//   display: 'flex',
-//   justifyContent: 'center',
-//   width: '100%',
-//   marginTop: '24px',
-// });
+const ApplyButtonContainer = styled(Box)({
+  display: 'flex',
+  justifyContent: 'center',
+  width: '100%',
+  marginTop: '24px',
+});
 
-// const ApplyButton = styled(Button)({
-//   backgroundColor: '#FF5E00',
-//   color: '#FFFFFF',
-//   padding: '12px 32px',
-//   borderRadius: '8px',
-//   textTransform: 'none',
-//   fontSize: '16px',
-//   fontWeight: 600,
-//   minWidth: '280px',
-//   '&:hover': {
-//     backgroundColor: '#E65500',
-//   },
-// });
+const ApplyButton = styled(Button)({
+  backgroundColor: '#FF5E00',
+  color: '#FFFFFF',
+  padding: '12px 32px',
+  borderRadius: '8px',
+  textTransform: 'none',
+  fontSize: '16px',
+  fontWeight: 600,
+  minWidth: '280px',
+  '&:hover': {
+    backgroundColor: '#E65500',
+  },
+});
 
 const ExpandButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
@@ -296,12 +296,11 @@ export default function Dashboard() {
               ))}
             </DSRTable>
           </DSRDetailsCard>
-
-          {/* <ApplyButtonContainer>
+          <ApplyButtonContainer>
             <ApplyButton onClick={handleApplyLoan}>
               Apply for Loan / Advance
             </ApplyButton>
-          </ApplyButtonContainer> */}
+          </ApplyButtonContainer>
         </Box>
       </MainContent>
     </DashboardContainer>
