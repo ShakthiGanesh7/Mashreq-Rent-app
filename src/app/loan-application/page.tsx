@@ -1,6 +1,7 @@
 'use client';
 import { Box, Typography, TextField, Button, styled, IconButton, MenuItem, Select, FormControl, InputLabel, Link as MuiLink, Dialog, DialogContent, DialogContentText } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SideNavigation from '../components/SideNavigation';
@@ -145,6 +146,25 @@ const StepLabel = styled(Typography)<{ active?: boolean }>(({ theme, active }) =
   },
   [theme.breakpoints.down('sm')]: {
     fontSize: '14px',
+  },
+}));
+
+const UploadButton = styled(Box)(({ theme }) => ({
+  backgroundColor: '#FFFFFF',
+  color: '#FF5E00',
+  padding: '20px',
+  borderRadius: '8px',
+  border: '2px dashed #FF5E00',
+  textTransform: 'none',
+  fontSize: '16px',
+  fontWeight: 500,
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+  '&:hover': {
+    backgroundColor: 'rgba(255, 94, 0, 0.04)',
+    border: '2px dashed #E65500',
   },
 }));
 
@@ -298,12 +318,30 @@ const ActionButtons = styled(Box)(({ theme }) => ({
   },
 }));
 
+const updateDashboardCounts = () => {
+  try {
+    // Get existing counts or initialize
+    const counts = JSON.parse(localStorage.getItem('dashboardCounts') || '{"all": 0, "inProgress": 0}');
+    
+    // Increment counts
+    counts.all += 1;
+    counts.inProgress += 1;
+    
+    // Save back to localStorage
+    localStorage.setItem('dashboardCounts', JSON.stringify(counts));
+  } catch (error) {
+    console.error('Error updating dashboard counts:', error);
+  }
+};
+
 export default function LoanApplication() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isExpanded, setIsExpanded] = useState(false);
   const [loanType, setLoanType] = useState<string>('');
   const [exceptionType, setExceptionType] = useState<string>('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Add new state variables for form fields
   const [loanAmount, setLoanAmount] = useState<string>('');
   const [installments, setInstallments] = useState<string>('');
@@ -323,7 +361,6 @@ export default function LoanApplication() {
     { label: 'Terms & Conditions', step: 3 },
     { label: 'Print Application Form', step: 4 },
     { label: 'Submit the Details', step: 5 },
-    { label: 'Approval Status', step: 6 }
   ];
 
   const loanTypes = [
@@ -364,12 +401,36 @@ export default function LoanApplication() {
     }
   };
 
-  const handleSubmit = () => {
-    setShowSuccess(true);
-    setTimeout(() => {
-      setShowSuccess(false);
-      router.push('/dashboard');
-    }, 2000);
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (currentStep === 5 && !selectedFile) {
+      alert('Please attach the signed application form before submitting.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Simulate file upload
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Update dashboard counts
+      updateDashboardCounts();
+      
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        router.push('/dashboard');
+      }, 3000);
+    } catch (error) {
+      alert('Error submitting application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleExpandClick = () => {
@@ -496,6 +557,9 @@ export default function LoanApplication() {
 
     // Save the PDF
     doc.save('Mashreq-Loan-Application.pdf');
+    
+    // Move to next step
+    handleNext();
   };
 
   return (
@@ -513,6 +577,38 @@ export default function LoanApplication() {
         </ExpandButton>
       </SideNav>
 
+      <Dialog
+        open={showSuccess}
+        aria-describedby="success-dialog-description"
+        PaperProps={{
+          sx: {
+            borderRadius: '12px',
+            padding: '24px',
+            minWidth: { xs: '300px', sm: '400px' }
+          }
+        }}
+      >
+        <DialogContent sx={{ textAlign: 'center', padding: '24px' }}>
+          <CheckCircleIcon sx={{ 
+            fontSize: { xs: 48, sm: 64 }, 
+            color: '#4CAF50', 
+            marginBottom: '16px' 
+          }} />
+          <DialogContentText
+            id="success-dialog-description"
+            sx={{
+              color: '#000',
+              fontSize: { xs: '16px', sm: '18px' },
+              fontWeight: 500,
+              marginBottom: '8px'
+            }}
+          >
+            Application Submitted Successfully!
+          </DialogContentText>
+          
+        </DialogContent>
+      </Dialog>
+      
       <MainContent sidenavwidth={isExpanded ? '240px' : '80px'}>
         <ContentWrapper>
           <StepIndicatorContainer>
@@ -716,8 +812,121 @@ export default function LoanApplication() {
                 </Box>
               </>
             )}
+            {currentStep === 5 && (
+              <>
+                <Box>
+                  <Typography variant="h4" sx={{ 
+                    fontWeight: 700,
+                    marginBottom: '32px',
+                    color: '#000',
+                    textAlign: 'center',
+                    fontSize: { xs: '24px', sm: '32px' }
+                  }}>
+                    Submit Application
+                  </Typography>
+
+                  <Typography sx={{ 
+                    color: '#666',
+                    marginBottom: '32px',
+                    textAlign: 'center',
+                    fontSize: { xs: '14px', sm: '16px' }
+                  }}>
+                    Please attach your signed application form to complete the submission process.
+                  </Typography>
+
+                  <Box sx={{ 
+                    marginBottom: '32px',
+                    padding: { xs: '16px', sm: '24px' }
+                  }}>
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileSelect}
+                      style={{ display: 'none' }}
+                      id="application-file"
+                    />
+                    <label htmlFor="application-file">
+                      <UploadButton>
+                        <Box sx={{
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '16px',
+                          padding: { xs: '24px', sm: '32px' },
+                          border: '2px dashed #FF5E00',
+                          borderRadius: '12px',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            backgroundColor: 'rgba(255, 94, 0, 0.04)',
+                            border: '2px dashed #E65500',
+                          }
+                        }}>
+                          <CloudUploadIcon sx={{ 
+                            fontSize: { xs: 48, sm: 64 }, 
+                            color: '#FF5E00' 
+                          }} />
+                          {selectedFile ? (
+                            <Typography sx={{ 
+                              color: '#FF5E00',
+                              fontSize: { xs: '14px', sm: '16px' },
+                              fontWeight: 500
+                            }}>
+                              {selectedFile.name}
+                            </Typography>
+                          ) : (
+                            <Typography sx={{ 
+                              color: '#FF5E00',
+                              fontSize: { xs: '14px', sm: '16px' },
+                              fontWeight: 500
+                            }}>
+                              Click to attach signed application form
+                            </Typography>
+                          )}
+                          <Typography variant="body2" sx={{ 
+                            color: '#666',
+                            fontSize: { xs: '12px', sm: '14px' }
+                          }}>
+                            Supported format: PDF
+                          </Typography>
+                        </Box>
+                      </UploadButton>
+                    </label>
+                  </Box>
+
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    gap: '16px',
+                    padding: { xs: '0 16px', sm: '0' }
+                  }}>
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={!selectedFile || isSubmitting}
+                      variant="contained"
+                      sx={{
+                        backgroundColor: '#FF5E00',
+                        color: '#FFFFFF',
+                        padding: '12px 32px',
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        fontSize: '16px',
+                        fontWeight: 600,
+                        width: { xs: '100%', sm: 'auto' },
+                        minWidth: { sm: '200px' },
+                        '&:hover': {
+                          backgroundColor: '#E65500',
+                        }
+                      }}
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                    </Button>
+                  </Box>
+                </Box>
+              </>
+            )}
             <ActionButtons>
-              {currentStep > 1 && (
+              {currentStep > 1 && currentStep !== 3 && currentStep !== 5 && (
                 <Button
                   variant="outlined"
                   onClick={handleBack}
@@ -735,7 +944,7 @@ export default function LoanApplication() {
                   Back
                 </Button>
               )}
-              {currentStep < totalSteps && currentStep !== 3 && (
+              {currentStep < totalSteps && currentStep !== 3 && currentStep !== 5 && (
                 <Button
                   variant="contained"
                   onClick={handleNext}
@@ -778,7 +987,7 @@ export default function LoanApplication() {
               fontWeight: 500
             }}
           >
-            Application Submitted Successfully!
+            Application Submitted Successfully For Approval!
           </DialogContentText>
         </DialogContent>
       </Dialog>

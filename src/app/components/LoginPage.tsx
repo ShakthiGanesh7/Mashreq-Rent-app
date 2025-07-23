@@ -2,7 +2,6 @@
 import { Box, Button, TextField, Typography, ThemeProvider, InputAdornment, IconButton } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import Header from './Header';
 import theme from '../theme/theme';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
@@ -154,7 +153,33 @@ export default function LoginPage() {
   return (
     <ThemeProvider theme={theme}>
       <LoginContainer>
-        <Header />
+        <Box sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '84px',
+          background: 'linear-gradient(90deg, #FF5E00 0%, #FB9544 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 24px',
+          zIndex: 100,
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+        }}>
+          <Box sx={{ width: '300px', height: '100%', position: 'relative' }}>
+            <Image
+              src="/images/mashreq-logo.png"
+              alt="Mashreq Logo"
+              fill
+              style={{ 
+                objectFit: 'contain',
+                objectPosition: 'left center',
+                filter: 'brightness(0) invert(1)',
+              }}
+              priority
+            />
+          </Box>
+        </Box>
         <MainContent>
           <WelcomeSection>
             <Typography 

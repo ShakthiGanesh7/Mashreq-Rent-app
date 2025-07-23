@@ -2,7 +2,7 @@
 import { Box, Typography, Button, styled, IconButton } from '@mui/material';
 import SideNavigation from './SideNavigation';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const DashboardContainer = styled(Box)({
@@ -188,7 +188,29 @@ const ExpandButton = styled(IconButton)(({ theme }) => ({
 
 export default function Dashboard() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [dashboardCounts, setDashboardCounts] = useState({
+    all: 0,
+    inProgress: 0,
+    approved: 0,
+    rejected: 0
+  });
   const router = useRouter();
+
+  // Effect to load counts from localStorage when component mounts
+  useEffect(() => {
+    try {
+      const savedCounts = JSON.parse(localStorage.getItem('dashboardCounts') || '{}');
+      setDashboardCounts(prevCounts => ({
+        ...prevCounts,
+        all: savedCounts.all || 0,
+        inProgress: savedCounts.inProgress || 0,
+        approved: savedCounts.approved || 0,
+        rejected: savedCounts.rejected || 0
+      }));
+    } catch (error) {
+      console.error('Error loading dashboard counts:', error);
+    }
+  }, []);
 
   const employeeDetails = {
     fullName: 'Shakthi G',
@@ -200,10 +222,10 @@ export default function Dashboard() {
   };
 
   const statusCards = [
-    { label: 'All', count: 0, color: '#FF9800' },
-    { label: 'In Progress', count: 0, color: '#2196F3' },
-    { label: 'Approved', count: 0, color: '#4CAF50' },
-    { label: 'Rejected', count: 0, color: '#F44336' },
+    { label: 'All', count: dashboardCounts.all, color: '#FF9800' },
+    { label: 'In Progress', count: dashboardCounts.inProgress, color: '#2196F3' },
+    { label: 'Approved', count: dashboardCounts.approved, color: '#4CAF50' },
+    { label: 'Rejected', count: dashboardCounts.rejected, color: '#F44336' },
   ];
 
   const dsrDetails = [

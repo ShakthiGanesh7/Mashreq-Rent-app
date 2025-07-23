@@ -1,5 +1,5 @@
 'use client';
-import { Box, Button, IconButton, Menu, MenuItem, styled } from '@mui/material';
+import { Box, Button, IconButton, Menu, MenuItem, Typography, styled } from '@mui/material';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -40,9 +40,15 @@ const ActionContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   gap: '16px',
   [theme.breakpoints.down('sm')]: {
-    '& .hide-on-mobile': {
-      display: 'none',
-    },
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    background: '#FFFFFF',
+    padding: '8px 16px',
+    boxShadow: '0px -2px 4px rgba(0, 0, 0, 0.1)',
+    justifyContent: 'space-around',
+    zIndex: 1000,
   },
 }));
 
@@ -77,10 +83,36 @@ const ProfileIcon = styled(IconButton)(({ theme }) => ({
   '& .MuiSvgIcon-root': {
     fontSize: '36px', // Increased from 32px
     [theme.breakpoints.down('sm')]: {
-      fontSize: '32px', // Increased from 28px
+      fontSize: '32px',
+      color: '#FF5E00',
+    },
+  },
+  [theme.breakpoints.down('sm')]: {
+    color: '#FF5E00',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 94, 0, 0.04)',
     },
   },
 }));
+
+const MobileNavItem = styled(Box)(({ theme }) => ({
+  display: 'none',
+  [theme.breakpoints.down('sm')]: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '4px',
+    color: '#FF5E00',
+    '& .MuiSvgIcon-root': {
+      fontSize: '24px',
+    },
+  },
+}));
+
+const NavText = styled(Typography)({
+  fontSize: '12px',
+  fontWeight: 500,
+});
 
 const UserMenu = styled(Menu)({
   '& .MuiPaper-root': {
@@ -101,7 +133,8 @@ const UserMenu = styled(Menu)({
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const showNewLoanButton = pathname !== '/loan-application';
+  const isLoginPage = pathname === '/login';
+  const showNewLoanButton = !isLoginPage && pathname !== '/loan-application';
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleNewLoan = () => {
@@ -145,21 +178,34 @@ export default function Header() {
         />
       </LogoContainer>
 
-      <ActionContainer>
-        {showNewLoanButton && (
-          <ActionButton
-            variant="contained"
-            onClick={handleNewLoan}
-            disableElevation
-            className="hide-on-mobile"
-          >
-            New Loan Application
-          </ActionButton>
-        )}
-        <ProfileIcon onClick={handleProfileClick}>
-          <AccountCircleIcon />
-        </ProfileIcon>
-        <UserMenu
+      {!isLoginPage && (
+        <ActionContainer>
+          {showNewLoanButton && (
+            <>
+              <ActionButton
+                variant="contained"
+                onClick={handleNewLoan}
+                disableElevation
+                sx={{ display: { xs: 'none', sm: 'block' } }}
+              >
+                New Loan Application
+              </ActionButton>
+              <MobileNavItem onClick={handleNewLoan}>
+                <Box sx={{ color: '#FF5E00' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                  </svg>
+                </Box>
+                <NavText>New Loan</NavText>
+              </MobileNavItem>
+            </>
+          )}
+          <ProfileIcon onClick={handleProfileClick} sx={{ display: { xs: 'none', sm: 'flex' } }} />
+          <MobileNavItem onClick={handleProfileClick}>
+            <AccountCircleIcon />
+            <NavText>Profile</NavText>
+          </MobileNavItem>
+          <UserMenu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
@@ -185,6 +231,7 @@ export default function Header() {
           </MenuItem>
         </UserMenu>
       </ActionContainer>
+      )}
     </HeaderContainer>
   );
 }
